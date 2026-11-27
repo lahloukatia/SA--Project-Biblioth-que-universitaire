@@ -36,4 +36,4 @@ Comptes de démonstration (mot de passe `Biblio2026!`) : adhérents `karim.benal
 - sortie HTML échappée (`e()`), en-têtes `Content-Security-Policy`, `X-Frame-Options`, `nosniff` ;
 - contrôle des rôles (un adhérent n'accède pas à `biblio/`) et propriété des données (un adhérent n'annule que SES réservations) ;
 - les règles métier du serveur Java sont reprises (adhérent actif, une réservation en attente par livre) ;
-  les nouveaux identifiants suivent la même méthode que le serveur Java (`MAX + 1` sous `LOCK TABLE`).
+  les nouveaux identifiants sont générés par la base (colonnes `IDENTITY`, `INSERT ... RETURNING`), comme dans le serveur Java.
