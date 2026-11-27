@@ -5,8 +5,6 @@ Application de gestion d'une bibliothèque universitaire :
 - **Partie réseau** : client Python ↔ serveur applicatif Java (TCP, protocole texte `COMMANDE|champ|champ`) (`java/`, `python/`)
 - **Site web** PHP pour les adhérents et les bibliothécaires (`php/`)
 
-> README en cours de rédaction — complété à chaque étape.
-
 ## 1. Installer la base (Ubuntu)
 
 ```bash
@@ -44,10 +42,21 @@ Protocole (voir le rapport) : `HELLO|id` · `ADH|id_adh` · `PRET|id_adh|code` �
 Réponses : `HELLO_OK|nom|prenom`, `ADH_OK|nom|prenom|type|nb_en_cours|amendes`, `PRET_OK|id|retour_prevu|reservation_honoree(0/1)`,
 `RETOUR_OK|id|jours_retard|montant|reservation_en_attente(0/1)`, `BYE`, `TIMEOUT`, `XXX_KO|Exx`, `ERR|Exx`.
 
-## 3. Contenu
+## 3. Site web (PHP)
+
+Prérequis Ubuntu : `sudo apt install php-cli php-pgsql`
+
+```bash
+./scripts/run_web.sh            # http://localhost:8080
+./scripts/reset_db.sh && ./tests/tests_web.sh   # tests curl (modifient la base)
+```
+Détail des pages et de la sécurité : `php/README.md`.
+
+## 4. Contenu
 
 | Fichier | Rôle |
 |---|---|
+| `docs/Rapport_Bibliotheque_final.pdf` | Rapport de projet (version finale) |
 | `sql/01_creation_base.sql` | DDL + jeu de données initial |
 | `sql/02_requetes_select.sql` | Les 10 requêtes SELECT (questions à la base) |
 | `tests/test_contraintes.sql` | Preuve que cardinalités et règles métier sont garanties par la base |
@@ -55,3 +64,7 @@ Réponses : `HELLO_OK|nom|prenom`, `ADH_OK|nom|prenom|type|nb_en_cours|amendes`,
 | `python/client_bibliotheque.py` | Client réseau du comptoir |
 | `tests/tests_netcat.sh` | Tests fonctionnels (T) et de robustesse (R) avec netcat |
 | `scripts/run_serveur.sh` | Compile et lance le serveur (lit `.env`) |
+| `scripts/install_db.sh`, `scripts/reset_db.sh` | Installation et rechargement de la base |
+| `php/` | Site web (adhérents et bibliothécaires), voir `php/README.md` |
+| `scripts/run_web.sh` | Lance le site en local (port 8080) |
+| `tests/tests_web.sh` | Tests du site web avec curl |
