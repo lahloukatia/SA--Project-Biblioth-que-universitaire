@@ -63,20 +63,30 @@ class Connexion:
             raise ConnectionError("le serveur a fermé la connexion")
         return rep.rstrip("\n")
 
+    def _reprendre(self, msg):
+        """Rouvre la connexion, ré-identifie le poste puis renvoie msg."""
+        self.fermer()
+        if not self.ouvrir():
+            raise ConnectionError("serveur injoignable")
+        if self.id_biblio is not None and not msg.startswith("HELLO"):
+            rep = self._echange(f"HELLO|{self.id_biblio}")
+            if not rep.startswith("HELLO_OK"):
+                raise ConnectionError("ré-identification refusée")
+        return self._echange(msg)
+
     def envoyer(self, msg):
         """Envoie un message et renvoie la réponse ; se reconnecte et se ré-identifie si besoin."""
         try:
-            return self._echange(msg)
+            rep = self._echange(msg)
         except (OSError, ConnectionError) as e:
             print(f"  connexion perdue ({e}) : reconnexion...")
-            self.fermer()
-            if not self.ouvrir():
-                raise ConnectionError("serveur injoignable")
-            if self.id_biblio is not None and not msg.startswith("HELLO"):
-                rep = self._echange(f"HELLO|{self.id_biblio}")
-                if not rep.startswith("HELLO_OK"):
-                    raise ConnectionError("ré-identification refusée")
-            return self._echange(msg)
+            return self._reprendre(msg)
+        if rep == "TIMEOUT":
+            # le serveur a fermé pour inactivité AVANT de lire msg : msg n'a pas été traité,
+            # on peut donc le renvoyer sans risque de doublon sur une nouvelle connexion
+            print("  connexion fermée par le serveur (inactivité) : reconnexion...")
+            return self._reprendre(msg)
+        return rep
 
 
 def erreur(code):
@@ -93,14 +103,27 @@ def saisir_code(invite):
     return v if v.startswith("EX") and v[2:].isdigit() and 3 <= len(v[2:]) <= 10 else None
 
 
+# nombre de champs attendus pour chaque réponse positive (protection contre une réponse tronquée)
+NB_CHAMPS = {"HELLO_OK": 3, "ADH_OK": 6, "PRET_OK": 4, "RETOUR_OK": 5}
+
+
+def bien_formee(p):
+    return len(p) == NB_CHAMPS.get(p[0], len(p))
+
+
 def afficher(rep):
     p = rep.split("|")
     t = p[0]
-    if t == "ADH_OK":
+    if not bien_formee(p):
+        print("  Réponse mal formée du serveur : " + rep)
+    elif t == "ADH_OK":
         print(f"  Adhérent : {p[1]} {p[2]} ({p[3]}) - {p[4]} emprunt(s) en cours - amendes impayées : {p[5]} EUR")
     elif t == "PRET_OK":
         print(f"  Prêt n°{p[1]} enregistré - retour prévu le {p[2]}" + (" - réservation honorée" if p[3] == "1" else ""))
     elif t == "RETOUR_OK":
+        if not p[2].isdigit():
+            print("  Réponse mal formée du serveur : " + rep)
+            return
         txt = f"  Retour de l'emprunt n°{p[1]} enregistré"
         if int(p[2]) > 0:
             txt += f" - retard de {p[2]} jour(s), amende de {p[3]} EUR"
@@ -124,12 +147,12 @@ def identifier(c):
             continue
         rep = c.envoyer(f"HELLO|{ident}")
         p = rep.split("|")
-        if p[0] == "HELLO_OK":
+        if p[0] == "HELLO_OK" and bien_formee(p):
             c.id_biblio = int(ident)
             print(f"Bonjour {p[1]} {p[2]}.")
             return True
         print("  Refus : " + erreur(p[1] if len(p) > 1 else "?"))
-    print("Trop d'échecs d'identification : le serveur ferme la connexion.")
+    print("Trop d'essais d'identification : fin du programme.")
     return False
 
 
@@ -173,7 +196,8 @@ def main():
     except (KeyboardInterrupt, EOFError):
         print("\nInterruption : fermeture de la connexion.")
         try:
-            c.envoyer("QUIT")
+            if c.f is not None:
+                c._echange("QUIT")   # pas de reconnexion juste pour dire au revoir
         except (OSError, ConnectionError):
             pass
         return 0
