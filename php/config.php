@@ -169,11 +169,3 @@ function exiger_post(): void
         exit('Méthode non autorisée.');
     }
 }
-
-/** Nouvel identifiant : les clés du schéma sont des INT simples (comme dans le serveur Java : MAX + 1 sous verrou). */
-function prochain_id(PDO $pdo, string $table, string $colonne): int
-{
-    // $table et $colonne sont des constantes du code (jamais des données utilisateur)
-    $pdo->exec("LOCK TABLE $table IN EXCLUSIVE MODE");
-    return (int) $pdo->query("SELECT COALESCE(MAX($colonne), 0) + 1 FROM $table")->fetchColumn();
-}
