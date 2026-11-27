@@ -68,9 +68,9 @@ post "$JAR_B" biblio/retards.php -d "csrf=$T" -d "id_emprunt=${ID_EMP:-0}"
 contient "encaissée" && pass "W16 encaissement de l'amende de l'emprunt n°${ID_EMP}" || fail "W16" "message absent"
 post "$JAR_B" biblio/ajouter_livre.php -d "csrf=$T" -d "isbn=123" -d "titre=Test" -d "langue=Français" -d "annee=2024" -d "pages=100" -d "editeur=1" -d "categorie=2" -d "auteur=1"
 contient "ISBN" && pass "W17 ISBN invalide refusé" || fail "W17" "message absent"
-post "$JAR_B" biblio/ajouter_livre.php -d "csrf=$T" -d "isbn=9780000000064" -d "titre=Livre de test" -d "langue=Français" -d "annee=2024" -d "pages=100" -d "editeur=1" -d "categorie=2" -d "auteur=1"
+post "$JAR_B" biblio/ajouter_livre.php -d "csrf=$T" -d "isbn=9780000000071" -d "titre=Livre de test" -d "langue=Français" -d "annee=2024" -d "pages=100" -d "editeur=1" -d "categorie=2" -d "auteur=1"
 contient "Livre ajouté" && pass "W18 ajout d'un livre (INSERT)" || fail "W18" "message absent"
-post "$JAR_B" biblio/ajouter_livre.php -d "csrf=$T" -d "isbn=9780000000064" -d "titre=Doublon" -d "langue=Français" -d "annee=2024" -d "pages=100" -d "editeur=1" -d "categorie=2" -d "auteur=1"
+post "$JAR_B" biblio/ajouter_livre.php -d "csrf=$T" -d "isbn=9780000000071" -d "titre=Doublon" -d "langue=Français" -d "annee=2024" -d "pages=100" -d "editeur=1" -d "categorie=2" -d "auteur=1"
 contient "existe déjà" && pass "W19 ISBN en double refusé par la base" || fail "W19" "message absent"
 
 echo
