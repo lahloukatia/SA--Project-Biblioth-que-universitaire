@@ -59,8 +59,12 @@ require __DIR__ . '/inc/entete.php';
   <button type="submit">Rechercher</button>
 </form>
 <p class="petit"><?= count($livres) ?> livre(s) trouvé(s).</p>
+<div class="catalogue-tableau">
 <table>
-  <tr><th></th><th>Titre</th><th>Auteur(s)</th><th>Catégorie</th><th>Année</th><th>Langue</th><th>Disponibilité</th><?php if ($peut_reserver): ?><th></th><?php endif; ?></tr>
+  <thead>
+    <tr><th scope="col">Couverture</th><th scope="col">Titre</th><th scope="col">Auteur(s)</th><th scope="col">Catégorie</th><th scope="col">Année</th><th scope="col">Langue</th><th scope="col">Disponibilité</th><?php if ($peut_reserver): ?><th scope="col" class="catalogue-action">Réservation</th><?php endif; ?></tr>
+  </thead>
+  <tbody>
   <?php foreach ($livres as $l): ?>
   <tr>
     <td><?php if ((int) $l['a_couverture'] === 1): ?><img class="couverture" src="couverture.php?id=<?= (int) $l['id_livre'] ?>" alt="Couverture"><?php endif; ?></td>
@@ -71,13 +75,15 @@ require __DIR__ . '/inc/entete.php';
     <td><?= e($l['langue_livre']) ?></td>
     <td>
       <?php if ((int) $l['nb_disponibles'] > 0): ?>
-        <span class="dispo"><?= (int) $l['nb_disponibles'] ?> / <?= (int) $l['nb_exemplaires'] ?> disponible(s)</span>
+        <span class="catalogue-statut dispo">Disponible</span>
+        <span class="catalogue-exemplaires"><?= (int) $l['nb_disponibles'] ?> sur <?= (int) $l['nb_exemplaires'] ?></span>
       <?php else: ?>
-        <span class="indispo">Aucun exemplaire disponible</span> <span class="petit">(<?= (int) $l['nb_exemplaires'] ?> au total)</span>
+        <span class="catalogue-statut indispo">Indisponible</span>
+        <span class="catalogue-exemplaires">0 sur <?= (int) $l['nb_exemplaires'] ?></span>
       <?php endif; ?>
     </td>
     <?php if ($peut_reserver): ?>
-    <td>
+    <td class="catalogue-action">
       <?php if ((int) $l['nb_disponibles'] === 0 && (int) $l['nb_exemplaires'] > 0): ?>
         <form method="post" action="reserver.php" class="inline">
           <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
@@ -89,5 +95,7 @@ require __DIR__ . '/inc/entete.php';
     <?php endif; ?>
   </tr>
   <?php endforeach; ?>
+  </tbody>
 </table>
+</div>
 <?php require __DIR__ . '/inc/pied.php'; ?>

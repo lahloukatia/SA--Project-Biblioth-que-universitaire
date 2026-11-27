@@ -59,7 +59,9 @@ $titre = 'Connexion';
 $prefixe = '';
 require __DIR__ . '/inc/entete.php';
 ?>
-<h2>Connexion</h2>
+<section class="connexion" aria-labelledby="connexion-titre">
+<h2 id="connexion-titre">Bienvenue sur Ma BU</h2>
+<p class="connexion-intro">Connectez-vous pour accéder au catalogue et à votre espace universitaire.</p>
 <?php if ($erreur !== ''): ?><p class="message erreur"><?= e($erreur) ?></p><?php endif; ?>
 <form method="post" autocomplete="off">
   <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
@@ -67,6 +69,7 @@ require __DIR__ . '/inc/entete.php';
   <input id="login" name="login" maxlength="50" required autofocus>
   <label for="mdp">Mot de passe</label>
   <input id="mdp" name="mot_de_passe" type="password" maxlength="200" required>
-  <p><button type="submit">Se connecter</button></p>
+  <button type="submit">Se connecter</button>
 </form>
+</section>
 <?php require __DIR__ . '/inc/pied.php'; ?>
