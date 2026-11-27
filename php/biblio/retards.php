@@ -71,8 +71,12 @@ $prefixe = '../';
 require __DIR__ . '/../inc/entete.php';
 ?>
 <h2>Emprunts en retard</h2>
+<div class="catalogue-tableau">
 <table>
-  <tr><th>N°</th><th>Adhérent</th><th>Livre</th><th>Exemplaire</th><th>Emprunté le</th><th>Retour prévu</th><th>Retard</th></tr>
+  <thead>
+    <tr><th scope="col">N°</th><th scope="col">Adhérent</th><th scope="col">Livre</th><th scope="col">Exemplaire</th><th scope="col">Emprunté le</th><th scope="col">Retour prévu</th><th scope="col">Retard</th></tr>
+  </thead>
+  <tbody>
   <?php foreach ($retards as $r): ?>
   <tr>
     <td><?= (int) $r['id_emprunt'] ?></td>
@@ -81,24 +85,36 @@ require __DIR__ . '/../inc/entete.php';
     <td><?= e($r['code_inventaire']) ?></td>
     <td><?= e($r['date_emprunt']) ?></td>
     <td><?= e($r['date_retour_prevue']) ?></td>
-    <td><?= (int) $r['jours_retard'] ?> jour(s)</td>
+    <td><span class="catalogue-statut indispo"><?= (int) $r['jours_retard'] ?> <?= (int) $r['jours_retard'] === 1 ? 'jour' : 'jours' ?></span></td>
   </tr>
   <?php endforeach; ?>
   <?php if (!$retards): ?><tr><td colspan="7">Aucun retard.</td></tr><?php endif; ?>
+  </tbody>
 </table>
+</div>
 
 <h2>Amendes impayées par adhérent</h2>
+<div class="catalogue-tableau">
 <table>
-  <tr><th>Adhérent</th><th>Nombre d'amendes</th><th>Total</th></tr>
+  <thead>
+    <tr><th scope="col">Adhérent</th><th scope="col">Nombre d'amendes</th><th scope="col">Total</th></tr>
+  </thead>
+  <tbody>
   <?php foreach ($totaux as $t): ?>
   <tr><td><?= e($t['prenom'] . ' ' . $t['nom']) ?></td><td><?= (int) $t['nb_amendes'] ?></td><td><?= e(number_format((float) $t['total'], 2, ',', ' ')) ?> €</td></tr>
   <?php endforeach; ?>
   <?php if (!$totaux): ?><tr><td colspan="3">Aucune amende impayée.</td></tr><?php endif; ?>
+  </tbody>
 </table>
+</div>
 
 <h2>Encaisser une amende</h2>
+<div class="catalogue-tableau">
 <table>
-  <tr><th>Emprunt</th><th>Adhérent</th><th>Livre</th><th>Montant</th><th>Émise le</th><th></th></tr>
+  <thead>
+    <tr><th scope="col">Emprunt</th><th scope="col">Adhérent</th><th scope="col">Livre</th><th scope="col">Montant</th><th scope="col">Émise le</th><th scope="col" class="catalogue-action">Action</th></tr>
+  </thead>
+  <tbody>
   <?php foreach ($impayees as $m): ?>
   <tr>
     <td><?= (int) $m['id_emprunt'] ?></td>
@@ -106,7 +122,7 @@ require __DIR__ . '/../inc/entete.php';
     <td><?= e($m['titre_livre']) ?></td>
     <td><?= e(number_format((float) $m['montant_amende'], 2, ',', ' ')) ?> €</td>
     <td><?= e($m['date_emission']) ?></td>
-    <td>
+    <td class="catalogue-action">
       <form method="post" class="inline">
         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
         <input type="hidden" name="id_emprunt" value="<?= (int) $m['id_emprunt'] ?>">
@@ -116,5 +132,7 @@ require __DIR__ . '/../inc/entete.php';
   </tr>
   <?php endforeach; ?>
   <?php if (!$impayees): ?><tr><td colspan="6">Rien à encaisser.</td></tr><?php endif; ?>
+  </tbody>
 </table>
+</div>
 <?php require __DIR__ . '/../inc/pied.php'; ?>

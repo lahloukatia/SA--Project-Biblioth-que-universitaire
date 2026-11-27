@@ -39,30 +39,40 @@ require __DIR__ . '/inc/entete.php';
 <h2>Mes emprunts</h2>
 <p>Amendes impayées : <strong><?= e(number_format((float) $amendes, 2, ',', ' ')) ?> €</strong>
   <?php if ((float) $amendes > 0): ?><span class="petit">(un nouveau prêt est refusé tant qu'une amende reste impayée ; réglez-la au comptoir)</span><?php endif; ?></p>
+<div class="catalogue-tableau">
 <table>
-  <tr><th>Livre</th><th>Exemplaire</th><th>Emprunté le</th><th>Retour prévu</th><th>Rendu le</th><th>Amende</th></tr>
+  <thead>
+    <tr><th scope="col">Livre</th><th scope="col">Exemplaire</th><th scope="col">Emprunté le</th><th scope="col">Retour prévu</th><th scope="col">Rendu le</th><th scope="col">Amende</th></tr>
+  </thead>
+  <tbody>
   <?php foreach ($emprunts as $m): ?>
   <tr>
     <td><?= e($m['titre_livre']) ?></td>
     <td><?= e($m['code_inventaire']) ?></td>
     <td><?= e($m['date_emprunt']) ?></td>
-    <td><?= e($m['date_retour_prevue']) ?><?php if ((int) $m['jours_retard'] > 0): ?> <span class="indispo">(<?= (int) $m['jours_retard'] ?> j de retard)</span><?php endif; ?></td>
+    <td><?= e($m['date_retour_prevue']) ?><?php if ((int) $m['jours_retard'] > 0): ?> <span class="catalogue-statut indispo">(<?= (int) $m['jours_retard'] ?> j de retard)</span><?php endif; ?></td>
     <td><?= $m['date_retour_effective'] === null ? 'en cours' : e($m['date_retour_effective']) ?></td>
     <td><?= $m['statut_amende'] === 'aucune' ? '—' : e(number_format((float) $m['montant_amende'], 2, ',', ' ')) . ' € (' . e($m['statut_amende']) . ')' ?></td>
   </tr>
   <?php endforeach; ?>
   <?php if (!$emprunts): ?><tr><td colspan="6">Aucun emprunt.</td></tr><?php endif; ?>
+  </tbody>
 </table>
+</div>
 
 <h2>Mes réservations</h2>
+<div class="catalogue-tableau">
 <table>
-  <tr><th>Livre</th><th>Date</th><th>Statut</th><th></th></tr>
+  <thead>
+    <tr><th scope="col">Livre</th><th scope="col">Date</th><th scope="col">Statut</th><th scope="col" class="catalogue-action">Action</th></tr>
+  </thead>
+  <tbody>
   <?php foreach ($reservations as $r): ?>
   <tr>
     <td><?= e($r['titre_livre']) ?></td>
     <td><?= e($r['date_reservation']) ?></td>
     <td><?= e($r['statut']) ?></td>
-    <td>
+    <td class="catalogue-action">
       <?php if ($r['statut'] === 'en_attente'): ?>
       <form method="post" action="annuler_reservation.php" class="inline">
         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
@@ -74,5 +84,7 @@ require __DIR__ . '/inc/entete.php';
   </tr>
   <?php endforeach; ?>
   <?php if (!$reservations): ?><tr><td colspan="4">Aucune réservation.</td></tr><?php endif; ?>
+  </tbody>
 </table>
+</div>
 <?php require __DIR__ . '/inc/pied.php'; ?>

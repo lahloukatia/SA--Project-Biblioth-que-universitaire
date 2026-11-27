@@ -22,8 +22,11 @@ public class Serveur {
     static final BigDecimal TARIF_JOUR = new BigDecimal("0.20"); // amende par jour de retard
     static final String TROP_LONG = "\u0000TROP_LONG";
 
-    static final String DB_URL = "jdbc:postgresql://" + env("DB_HOST", "localhost") + ":"
-            + env("DB_PORT", "5432") + "/" + env("DB_NAME", "bibliotheque");
+    static final String DB_URL =
+        "jdbc:postgresql://" + env("DB_HOST", "localhost") + ":"
+        + env("DB_PORT", "5432") + "/"
+        + env("DB_NAME", "bibliotheque")
+        + "?sslmode=require";
     static final String DB_USER = env("DB_USER", "bibli_user");
     static final String DB_PASS = System.getenv("DB_PASS");
 

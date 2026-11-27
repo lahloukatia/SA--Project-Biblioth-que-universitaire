@@ -68,7 +68,7 @@ function bd(): PDO
         exit('Configuration incomplète : DB_PASS est absent (voir .env.example).');
     }
     try {
-        $pdo = new PDO("pgsql:host=$hote;port=$port;dbname=$base", $user, $pass, [
+        $pdo = new PDO("pgsql:host=$hote;port=$port;dbname=$base;sslmode=require", $user, $pass, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
