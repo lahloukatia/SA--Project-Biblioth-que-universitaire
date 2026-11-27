@@ -8,3 +8,6 @@ __pycache__/
 *.log
 /tmp/
 java/out/
+# à ajouter à votre .gitignore
+php/config.local.php
+php/.env
