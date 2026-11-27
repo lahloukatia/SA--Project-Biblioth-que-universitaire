@@ -15,8 +15,6 @@ if ($idLivre === false) {
 $pdo = bd();
 $pdo->beginTransaction();
 try {
-    $id = prochain_id($pdo, 'reservation', 'id_reservation');   // verrouille la table pendant la transaction
-
     $st = $pdo->prepare('SELECT COUNT(*) FROM adherent WHERE id_adherent = :a AND actif_adherent');
     $st->execute([':a' => $u['id_adherent']]);
     if ((int) $st->fetchColumn() === 0) {
@@ -45,13 +43,26 @@ try {
         throw new RuntimeException('Vous avez déjà une réservation en attente pour ce livre.');
     }
 
+    // identifiant généré par la base (IDENTITY) ; l'index unique ux_reservation_en_attente
+    // bloque un doublon même si deux requêtes arrivent en même temps
     $st = $pdo->prepare(
-        "INSERT INTO reservation (id_reservation, date_reservation, statut_reservation, id_adherent, id_livre)
-         VALUES (:id, CURRENT_DATE, 'en_attente', :a, :l)"
+        "INSERT INTO reservation (date_reservation, statut_reservation, id_adherent, id_livre)
+         VALUES (CURRENT_DATE, 'en_attente', :a, :l)
+         RETURNING id_reservation"
     );
-    $st->execute([':id' => $id, ':a' => $u['id_adherent'], ':l' => $idLivre]);
+    $st->execute([':a' => $u['id_adherent'], ':l' => $idLivre]);
+    $id = (int) $st->fetchColumn();
     $pdo->commit();
     message('ok', 'Réservation enregistrée (n° ' . $id . ').');
+} catch (PDOException $e) {
+    // à placer AVANT RuntimeException : PDOException en hérite
+    $pdo->rollBack();
+    if ($e->getCode() === '23505') {
+        message('erreur', 'Vous avez déjà une réservation en attente pour ce livre.');
+    } else {
+        error_log('reserver.php : ' . $e->getMessage());
+        message('erreur', 'Erreur interne, la réservation n\'a pas été enregistrée.');
+    }
 } catch (RuntimeException $e) {
     $pdo->rollBack();
     message('erreur', $e->getMessage());
