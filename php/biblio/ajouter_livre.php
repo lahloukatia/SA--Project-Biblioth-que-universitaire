@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$erreurs) {
         try {
             $pdo->beginTransaction();
-            $id = prochain_id($pdo, 'livre', 'id_livre');
+            // l'identifiant est généré par la base (colonne IDENTITY), comme dans le serveur Java
             $st = $pdo->prepare(
-                "INSERT INTO livre (id_livre, isbn, titre_livre, langue_livre, annee_publication, nombre_pages, couverture_livre, id_editeur, id_categorie)
-                 VALUES (:id, :isbn, :titre, :langue, :annee, :pages, decode(:couv, 'hex'), :ed, :cat)"
+                "INSERT INTO livre (isbn, titre_livre, langue_livre, annee_publication, nombre_pages, couverture_livre, id_editeur, id_categorie)
+                 VALUES (:isbn, :titre, :langue, :annee, :pages, decode(:couv, 'hex'), :ed, :cat)
+                 RETURNING id_livre"
             );
-            $st->bindValue(':id', $id, PDO::PARAM_INT);
             $st->bindValue(':isbn', $f['isbn']);
             $st->bindValue(':titre', $f['titre']);
             $st->bindValue(':langue', $f['langue']);
@@ -72,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $st->bindValue(':ed', $f['editeur'], PDO::PARAM_INT);
             $st->bindValue(':cat', $f['categorie'], PDO::PARAM_INT);
             $st->execute();
+            $id = (int) $st->fetchColumn();
             $st = $pdo->prepare('INSERT INTO ecrire (id_livre, id_auteur) VALUES (:l, :a)');
             $st->execute([':l' => $id, ':a' => $f['auteur']]);
             $pdo->commit();
