@@ -10,14 +10,14 @@ $versionStyle = filemtime(__DIR__ . '/../style.css');
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($titre ?? 'Bibliothèque') ?> – Ma BU</title>
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/ma-bu-favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="<?= e($prefixe) ?>assets/ma-bu-favicon.png">
 <link rel="stylesheet" href="<?= e($prefixe) ?>style.css?v=<?= (int) $versionStyle ?>">
 </head>
 <body>
 <header class="site-entete<?= $pageCourante === 'login.php' ? ' site-entete-connexion' : '' ?>">
   <div class="site-entete-contenu">
   <h1 class="site-brand">
-    <img src="/assets/ma-bu-logo.png" alt="Ma BU – Bibliothèque universitaire" width="2172" height="724">
+    <img src="<?= e($prefixe) ?>assets/ma-bu-logo.png" alt="Ma BU – Bibliothèque universitaire" width="2172" height="724">
   </h1>
   <?php if ($u): ?>
   <nav aria-label="Navigation principale">
