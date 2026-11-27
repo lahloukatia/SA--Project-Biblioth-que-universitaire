@@ -26,7 +26,9 @@ public class Serveur {
         "jdbc:postgresql://" + env("DB_HOST", "localhost") + ":"
         + env("DB_PORT", "5432") + "/"
         + env("DB_NAME", "bibliotheque")
-        + "?sslmode=require";
+        // prefer : SSL si le serveur PostgreSQL le propose (base hébergée), connexion simple sinon.
+        // Mettre DB_SSLMODE=require dans .env pour l'imposer.
+        + "?sslmode=" + env("DB_SSLMODE", "prefer");
     static final String DB_USER = env("DB_USER", "bibli_user");
     static final String DB_PASS = System.getenv("DB_PASS");
 

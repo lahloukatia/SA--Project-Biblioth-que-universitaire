@@ -2,7 +2,7 @@
 /**
  * Configuration commune du site : connexion PostgreSQL (PDO), session, sécurité.
  * Les paramètres sont lus (par priorité) : variables d'environnement > php/config.local.php > ../.env > php/.env
- * Variables : DB_HOST (localhost), DB_PORT (5432), DB_NAME (bibliotheque), DB_USER, DB_PASS
+ * Variables : DB_HOST (localhost), DB_PORT (5432), DB_NAME (bibliotheque), DB_USER, DB_PASS, DB_SSLMODE (prefer)
  *             ou DB_URL au format JDBC (jdbc:postgresql://hote:port/base) déjà utilisé par le serveur Java.
  */
 declare(strict_types=1);
@@ -68,7 +68,12 @@ function bd(): PDO
         exit('Configuration incomplète : DB_PASS est absent (voir .env.example).');
     }
     try {
-        $pdo = new PDO("pgsql:host=$hote;port=$port;dbname=$base;sslmode=require", $user, $pass, [
+        // prefer : SSL si le serveur le propose (base hébergée), connexion simple sinon ; DB_SSLMODE=require pour l'imposer
+        $ssl = parametre('DB_SSLMODE', 'prefer');
+        if (!in_array($ssl, ['disable', 'allow', 'prefer', 'require', 'verify-ca', 'verify-full'], true)) {
+            $ssl = 'prefer';
+        }
+        $pdo = new PDO("pgsql:host=$hote;port=$port;dbname=$base;sslmode=$ssl", $user, $pass, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
