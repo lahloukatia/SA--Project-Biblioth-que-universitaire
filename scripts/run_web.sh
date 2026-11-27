@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PORT="${1:-8080}"
-if ! php -m | grep -qi '^pdo_pgsql$'; then
+if ! php -r 'exit(extension_loaded("pdo_pgsql") ? 0 : 1);'; then
   echo "Extension PHP pdo_pgsql absente : sudo apt install php-pgsql" >&2; exit 1
 fi
 if [ ! -f .env ] && [ -z "${DB_PASS:-}" ]; then
