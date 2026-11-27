@@ -3,6 +3,7 @@
 $prefixe = $prefixe ?? '';
 $u = utilisateur();
 $pageCourante = basename($_SERVER['SCRIPT_NAME'] ?? '');
+$versionStyle = filemtime(__DIR__ . '/../style.css');
 ?><!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,7 +11,7 @@ $pageCourante = basename($_SERVER['SCRIPT_NAME'] ?? '');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($titre ?? 'Bibliothèque') ?> – Ma BU</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/ma-bu-favicon.png">
-<link rel="stylesheet" href="<?= e($prefixe) ?>style.css">
+<link rel="stylesheet" href="<?= e($prefixe) ?>style.css?v=<?= (int) $versionStyle ?>">
 </head>
 <body>
 <header class="site-entete<?= $pageCourante === 'login.php' ? ' site-entete-connexion' : '' ?>">

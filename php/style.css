@@ -1,4 +1,4 @@
-body{font-family:system-ui,Arial,sans-serif;margin:0;background:#f4f6f8;color:#1b2631}
+body{min-height:100vh;display:flex;flex-direction:column;font-family:system-ui,Arial,sans-serif;margin:0;background:#f4f6f8;color:#1b2631}
 .site-entete{background:#142540;color:#fff}
 .site-entete-contenu{
   display:flex;
@@ -42,7 +42,7 @@ body{font-family:system-ui,Arial,sans-serif;margin:0;background:#f4f6f8;color:#1
 @media (max-width:640px){
   .site-entete .utilisateur{margin-left:0}
 }
-main{max-width:1000px;margin:1.2rem auto;padding:0 1rem}
+main{flex:1;width:calc(100% - 2rem);max-width:1000px;margin:1.2rem auto;padding:0 1rem}
 .connexion{
   max-width:24rem;
   margin:clamp(1.5rem,6vw,4rem) auto 0;
@@ -76,7 +76,20 @@ main{max-width:1000px;margin:1.2rem auto;padding:0 1rem}
 }
 .connexion button:hover{background:#294366}
 .connexion :focus-visible{outline:2px solid #142540;outline-offset:2px}
-footer{text-align:center;color:#666;font-size:.8rem;margin:2rem 0}
+.site-pied{margin-top:2rem;background:#142540;color:#fff}
+.site-pied-contenu{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:.75rem 1.5rem;
+  max-width:1000px;
+  margin:0 auto;
+  padding:1rem;
+}
+.site-pied small{display:block;margin-top:.25rem;color:#dce6f1}
+.site-pied a{color:#efb75e;text-underline-offset:.2em}
+.site-pied a:focus-visible{outline:2px solid #efb75e;outline-offset:3px}
 table{border-collapse:collapse;width:100%;background:#fff}
 th,td{border:1px solid #9aa5b1;padding:.4rem .6rem;text-align:left;vertical-align:middle}
 th{background:#dce6f1}
