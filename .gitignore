@@ -1,0 +1,10 @@
+# Secrets : ne JAMAIS les pousser sur GitHub
+.env
+php/config.local.php
+# Compilation / temporaire
+*.class
+__pycache__/
+*.pyc
+*.log
+/tmp/
+java/out/
